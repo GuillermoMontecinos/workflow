@@ -2,6 +2,13 @@ from django.shortcuts import render, redirect
 from django.db import connection
 import cx_Oracle
 
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+from django.views.generic import TemplateView
+from datetime import datetime
+from .models import ProcesoTipo, TareaTipo
+
+
 # Create your views here.
 def index(request):
 	return render(request, 'index.html')
@@ -294,19 +301,6 @@ def procesos(request):
 
     return render(request, 'DashboardCliente/dashboard.html',data)
 
-
-def listar_procesos_ejecutados():
-    django_cursor = connection.cursor()
-    cursor = django_cursor.connection.cursor()
-    out_cursor = django_cursor.connection.cursor()
-
-    cursor.callproc('SP_PROCESO_EJECUTADO', [out_cursor])
-
-    lista = []
-    for fila in out_cursor:
-        lista.append(fila)
-
-    return lista 
     
 def listar_tareas_tipo():
     django_cursor = connection.cursor()
@@ -320,19 +314,7 @@ def listar_tareas_tipo():
         lista.append(fila)
 
     return lista 
-
-def cantidad_de_tareas():
-    django_cursor = connection.cursor()
-    cursor = django_cursor.connection.cursor()
-    out_cursor = django_cursor.connection.cursor()
-
-    cursor.callproc('SP_CANTIDAD_TAREAS', [out_cursor])
-
-    lista = []
-    for fila in out_cursor:
-        lista.append(fila)
-
-    return lista 
+ 
 
 def tareas_terminadas():
     django_cursor = connection.cursor()
@@ -372,10 +354,27 @@ def tareas_detenidas():
 
     return lista
 
-def get_grafico_cantidad(self, **kwargs):
-    context=super().get_context_data(**kwargs)
-    context['dashboard']='dashboard'
-    context['cantidad_de_tareas']=self.cantidad_de_tareas()
-    return context    
+
+class DashboardView(TemplateView):
+    template_name = 'dashboard.html'
+
+    def cantidad_de_tareas():
+        django_cursor = connection.cursor()
+        cursor = django_cursor.connection.cursor()
+        out_cursor = django_cursor.connection.cursor()
+
+        cursor.callproc('SP_CANTIDAD_TAREAS', [out_cursor])
+
+        lista = []
+        for fila in out_cursor:
+            lista.append(fila)
+
+        return lista
+        
+    def get_context_data(self, **kwargs):
+        context=super().get_context_data(**kwargs)
+        context['dashboard']='dashboard'
+        context['cantidad_de_tareas']=self.cantidad_de_tareas()
+        return context    
 
 

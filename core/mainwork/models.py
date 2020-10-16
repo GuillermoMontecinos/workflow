@@ -70,8 +70,20 @@ class ProcesoTipo(models.Model):
     descripcion = models.CharField(max_length=50)
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.nombre
+    #def __str__(self):
+    #    return self.nombre
+
+    #def toJSON(self):
+    #    item = model_to_dict(self)
+    #    item['nombre'] = self.cli.toJSON()
+    #    item['descripcion'] = self.cli.toJSON()
+    #    item['unidad'] =  self.cli.toJSON()
+    #    return item
+
+    #class Meta:
+    #    verbose_name = 'Proceso'
+    #    verbose_name_plural = 'Procesos'
+    #    ordering = ['id']
 
 class TareaTipo(models.Model):
     id = models.AutoField(primary_key=True) 
