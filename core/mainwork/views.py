@@ -315,6 +315,18 @@ def listar_tareas_tipo():
 
     return lista 
  
+def listar_procesos_ejecutados():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cursor = django_cursor.connection.cursor()
+
+    cursor.callproc('SP_PROCESOS_EJECUTADOS', [out_cursor])
+
+    lista = []
+    for fila in out_cursor:
+        lista.append(fila)
+
+    return lista 
 
 def tareas_terminadas():
     django_cursor = connection.cursor()
@@ -355,26 +367,32 @@ def tareas_detenidas():
     return lista
 
 
+
+def cantidad_de_tareas():
+    django_cursor = connection.cursor()
+    cursor = django_cursor.connection.cursor()
+    out_cursor = django_cursor.connection.cursor()
+
+    cursor.callproc('SP_CANTIDAD_TAREAS', [out_cursor])
+
+    lista = []
+    for fila in out_cursor:
+        lista.append(fila)
+
+    return lista
+
 class DashboardView(TemplateView):
-    template_name = 'dashboard.html'
+    template_name = 'DashboardCliente/dashboard.html'
 
-    def cantidad_de_tareas():
-        django_cursor = connection.cursor()
-        cursor = django_cursor.connection.cursor()
-        out_cursor = django_cursor.connection.cursor()
+    def get_grafico_barras(self):
+        data=[]
+        return data
 
-        cursor.callproc('SP_CANTIDAD_TAREAS', [out_cursor])
 
-        lista = []
-        for fila in out_cursor:
-            lista.append(fila)
-
-        return lista
-        
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)
-        context['dashboard']='dashboard'
+        context['panel']='panel'
         context['cantidad_de_tareas']=self.cantidad_de_tareas()
-        return context    
+        return context
 
 
